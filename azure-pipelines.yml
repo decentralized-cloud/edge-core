@@ -1,0 +1,49 @@
+trigger:
+  tags:
+    include:
+      - v*
+  branches:
+    include:
+      - main
+      - release/*
+      - feature/*
+      - hotfix/*
+  paths:
+    exclude:
+      - README.md
+
+variables:
+  - template: variables.yml
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: decentralized-cloud/templates
+      endpoint: decentralized-cloud
+
+name: $(GitVersion.SemVer)
+
+stages:
+  - stage: Build
+    jobs:
+      - template: build/build-test-publish.yml@templates
+        parameters:
+          version: ${{ variables.artifactVersion }}
+          vmImage: ${{ variables.linuxVmImage }}
+          shouldBuildContract: false
+          shouldPublishServiceDockerImage: true
+          shouldTestPublishResult: true
+          shouldPublishHelmChartAsArtifact: false
+          shouldPublishHelmChart: ${{ variables.shouldPublishHelmChart }}
+          dockerContainerRegistry: ${{ variables.dockerContainerRegistry }}
+          dockerRepositoryName: ${{ variables.dockerRepositoryName }}
+          dockerBuildFilePath: ${{ variables.dockerBuildFilePath }}
+          dockerBuildContext: ${{ variables.dockerBuildContext }}
+          testDockerComposeFilePath: ${{ variables.testDockerComposeFilePath }}
+          coverallsServiceName: ${{ variables.coverallsServiceName }}
+          coverallsRepoToken: ${{ variables.coverallsRepoToken }}
+          buildAndPushHelmChartDockerFilePath: ${{ variables.buildAndPushHelmChartDockerFilePath }}
+          buildAndPushHelmChartDockerBuildContext: ${{ variables.buildAndPushHelmChartDockerBuildContext }}
+          githubAccessCredentials: ${{ variables.githubAccessCredentials }}
+
