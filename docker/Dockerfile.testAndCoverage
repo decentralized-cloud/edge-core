@@ -1,0 +1,7 @@
+FROM golang:1.16
+LABEL maintainer="morteza.alizadeh@gmail.com"
+
+ADD . /src
+WORKDIR /src
+RUN make dep
+CMD ["make", "test-and-publish-test-results"]

@@ -1,0 +1,45 @@
+variables:
+  - name: artifactVersion
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      value: latest
+    ${{ if not(eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
+      value: $(GitVersion.SemVer)
+
+  - name: linuxVmImage
+    value: "ubuntu-20.04"
+
+  - name: dockerContainerRegistry
+    value: "Decentralized Cloud Docker Hub"
+
+  - name: dockerRepositoryName
+    value: "decentralizedcloud/edge-core"
+
+  - name: dockerBuildFilePath
+    value: "$(system.defaultWorkingDirectory)/docker/Dockerfile.build"
+
+  - name: dockerBuildContext
+    value: "$(system.defaultWorkingDirectory)"
+
+  - name: testDockerComposeFilePath
+    value: "$(system.defaultWorkingDirectory)/docker/docker-compose-test.yml"
+
+  - name: coverallsServiceName
+    value: $(COVERALLS_SERVICE_NAME)
+
+  - name: coverallsRepoToken
+    value: $(COVERALLS_REPO_TOKEN)
+
+  - name: shouldPublishHelmChart
+    ? ${{ if or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')) }}
+    : value: true
+    ? ${{ if not(or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))) }}
+    : value: false
+
+  - name: buildAndPushHelmChartDockerFilePath
+    value: "$(system.defaultWorkingDirectory)/docker/Dockerfile.buildAndPushHelmChart"
+
+  - name: buildAndPushHelmChartDockerBuildContext
+    value: "$(system.defaultWorkingDirectory)"
+
+  - name: githubAccessCredentials
+    value: $(GITHUB_ACCESS_CREDENTIAL)
