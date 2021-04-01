@@ -40,20 +40,15 @@ securityContext: {}
   # runAsUser: 1000
 
 pod:
-  httpport: 81
-  grpcport: 80
-  database:
-    connection_string: "mongodb://mongodb:27017"
-    name: "edgecluster"
-    collection: "edgecluster"
-  idp:
-    jwksURL: ""
-  k3s:
-    dockerImage: ""
-
-service:
-  type: ClusterIP
-  grpcport: 80
+  http:
+    host: ""
+    port: 80
+  geolocation:
+    cron:
+      spec: "@every 5m"
+  ipinfo:
+    url: "https://ipinfo.io"
+    token: ""
 
 ingress:
   enabled: false

@@ -1,13 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ include "edge-core.fullname" . }}
   labels:
     {{- include "edge-core.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "edge-core.selectorLabels" . | nindent 6 }}
@@ -34,26 +31,21 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: GRPC_PORT
-              value: "{{ .Values.pod.grpcport }}"
+            - name: HTTP_HOST
+              value: "{{ .Values.pod.http.host }}"
             - name: HTTP_PORT
-              value: "{{ .Values.pod.httpport }}"
-            - name: DATABASE_CONNECTION_STRING
-              value: "{{ .Values.pod.database.connection_string }}"
-            - name: EDGE_CORE_DATABASE_NAME
-              value: "{{ .Values.pod.database.name }}"
-            - name: EDGE_CORE_DATABASE_COLLECTION_NAME
-              value: "{{ .Values.pod.database.collection }}"
-            - name: JWKS_URL
-              value: "{{ .Values.pod.idp.jwksURL }}"
-            - name: K3S_DOCKER_IMAGE
-              value: "{{ .Values.pod.k3s.dockerImage }}"
+              value: "{{ .Values.pod.http.port }}"
+            - name: GEOLOCATION_UPDATER_CRON_SPEC
+              value: "{{ .Values.pod.geolocation.cron.spec }}"
+            - name: IPINFO_URL
+              value: "{{ .Values.pod.ipinfo.url }}"
+            - name: IPINFO_ACCESS_TOKEN
+              value: "{{ .Values.pod.ipinfo.token }}"
+            - name: NODE_NAME
+              value: spec.nodeName
           ports:
-            - name: grpc
-              containerPort: {{ .Values.pod.grpcport }}
-              protocol: TCP
             - name: http
-              containerPort: {{ .Values.pod.httpport }}
+              containerPort: {{ .Values.pod.http.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
