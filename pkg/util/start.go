@@ -7,7 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/decentralized-cloud/edge-core/services/configuration"
-	"github.com/decentralized-cloud/edge-core/services/cron/geolocation"
+	"github.com/decentralized-cloud/edge-core/services/cron/ipgeolocation"
 	"github.com/decentralized-cloud/edge-core/services/transport/http"
 	"go.uber.org/zap"
 )
@@ -30,7 +30,7 @@ func StartService() {
 		logger.Fatal("Failed to setup dependecies", zap.Error(err))
 	}
 
-	geolocationUpdaterService, err := geolocation.NewCronService(
+	geolocationUpdaterService, err := ipgeolocation.NewCronService(
 		logger,
 		configurationService)
 	if err != nil {
@@ -48,11 +48,13 @@ func StartService() {
 	cleanupDone := make(chan struct{})
 	signal.Notify(signalChan, os.Interrupt)
 
-	go func() {
-		if serviceErr := geolocationUpdaterService.Start(); serviceErr != nil {
-			logger.Fatal("Failed to start Geolocation Updater service", zap.Error(serviceErr))
-		}
-	}()
+	if configurationService.ShouldUpdatePublciIPAndGeolocationDetails() {
+		go func() {
+			if serviceErr := geolocationUpdaterService.Start(); serviceErr != nil {
+				logger.Fatal("Failed to start Geolocation Updater service", zap.Error(serviceErr))
+			}
+		}()
+	}
 
 	go func() {
 		if serviceErr := httpTansportService.Start(); serviceErr != nil {
@@ -64,8 +66,10 @@ func StartService() {
 		<-signalChan
 		logger.Info("Received an interrupt, stopping services...")
 
-		if err := geolocationUpdaterService.Stop(); err != nil {
-			logger.Error("Failed to stop Geolocation Updater service", zap.Error(err))
+		if configurationService.ShouldUpdatePublciIPAndGeolocationDetails() {
+			if err := geolocationUpdaterService.Stop(); err != nil {
+				logger.Error("Failed to stop Geolocation Updater service", zap.Error(err))
+			}
 		}
 
 		if err := httpTansportService.Stop(); err != nil {

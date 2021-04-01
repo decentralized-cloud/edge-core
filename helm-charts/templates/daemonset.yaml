@@ -35,6 +35,10 @@ spec:
               value: "{{ .Values.pod.http.host }}"
             - name: HTTP_PORT
               value: "{{ .Values.pod.http.port }}"
+            - name: EDGE_CLUSTER_TYPE
+              value: "{{ .Values.pod.edgeClusterType }}"
+            - name: UPDATE_PUBLIC_IP_GEOLOCATION_DETAILS
+              value: "{{ .Values.pod.geolocation.enabled }}"
             - name: GEOLOCATION_UPDATER_CRON_SPEC
               value: "{{ .Values.pod.geolocation.cron.spec }}"
             - name: IPINFO_URL

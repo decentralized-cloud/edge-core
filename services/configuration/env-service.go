@@ -2,10 +2,12 @@
 package configuration
 
 import (
-	commonErrors "github.com/micro-business/go-core/system/errors"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	commonErrors "github.com/micro-business/go-core/system/errors"
 )
 
 type envConfigurationService struct {
@@ -18,9 +20,9 @@ func NewEnvConfigurationService() (ConfigurationContract, error) {
 }
 
 // GetHttpHost returns HTTP host name
-// Returns the HTTP host name or error if something goes wrong
-func (service *envConfigurationService) GetHttpHost() (string, error) {
-	return os.Getenv("HTTP_HOST"), nil
+// Returns the HTTP host name
+func (service *envConfigurationService) GetHttpHost() string {
+	return os.Getenv("HTTP_HOST")
 }
 
 // GetHttpPort returns HTTP port number
@@ -48,6 +50,33 @@ func (service *envConfigurationService) GetRunningNodeName() (string, error) {
 	}
 
 	return value, nil
+}
+
+// GetEdgeClusterType returns the type of edge cluster such as K3S
+// Returns the type of edge cluster or error if something goes wrong
+func (service *envConfigurationService) GetEdgeClusterType() (ClusterType, error) {
+	switch value := strings.Trim(os.Getenv("EDGE_CLUSTER_TYPE"), " "); value {
+	case "K3S":
+		return K3S, nil
+	case "":
+		return Unknown, commonErrors.NewUnknownError(
+			"EDGE_CLUSTER_TYPE is required")
+	default:
+		return Unknown, commonErrors.NewUnknownError(
+			fmt.Sprintf("Could not figure out the edge cluster type from the given EDGE_CLUSTER_TYPE (%s)", value))
+	}
+}
+
+// ShouldUpdatePublciIPAndGeolocationDetails determines whether the edge-core should periodically check
+// for the node public IP address and geolocation details
+// Returns true if the edge-core should periodically check for the node public IP address and
+// geolocation details otherwise returns false
+func (service *envConfigurationService) ShouldUpdatePublciIPAndGeolocationDetails() bool {
+	if value := strings.Trim(os.Getenv("UPDATE_PUBLIC_IP_GEOLOCATION_DETAILS"), " "); value == "true" {
+		return true
+	}
+
+	return false
 }
 
 // GetGeolocationUpdaterCronSpec returns Geolocation Updater updating interval
