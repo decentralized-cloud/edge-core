@@ -42,7 +42,9 @@ spec:
             - name: IPINFO_ACCESS_TOKEN
               value: "{{ .Values.pod.ipinfo.token }}"
             - name: NODE_NAME
-              value: spec.nodeName
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           ports:
             - name: http
               containerPort: {{ .Values.pod.http.port }}
