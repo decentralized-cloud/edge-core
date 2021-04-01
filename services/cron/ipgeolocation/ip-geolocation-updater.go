@@ -297,7 +297,7 @@ func (service *cronService) updateNode(ctx context.Context, ipinfoResponse *ipin
 	patch.Metadata.Labels = map[string]string{}
 	patch.Metadata.Labels["k3s.io/external-ip"] = ipinfoResponse.Ip
 	patch.Metadata.Labels["edgecloud9.public.lastUpdatedTime"] = currentTime
-	patch.Metadata.Labels["edgecloud9.public.ip"] = ipinfoResponse.Ip
+	patch.Metadata.Labels["edgecloud9.public.ip"] = base58.Encode([]byte(ipinfoResponse.Ip), acceptedCharactersForLabels)
 	patch.Metadata.Labels["edgecloud9.public.hostname"] = base58.Encode([]byte(ipinfoResponse.Hostname), acceptedCharactersForLabels)
 	patch.Metadata.Labels["edgecloud9.geolocation.lastUpdatedTime"] = currentTime
 	patch.Metadata.Labels["edgecloud9.geolocation.loc"] = base58.Encode([]byte(ipinfoResponse.Loc), acceptedCharactersForLabels)
