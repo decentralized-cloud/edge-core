@@ -5,6 +5,7 @@
 package mock_configuration
 
 import (
+	configuration "github.com/decentralized-cloud/edge-core/services/configuration"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -33,12 +34,11 @@ func (m *MockConfigurationContract) EXPECT() *MockConfigurationContractMockRecor
 }
 
 // GetHttpHost mocks base method
-func (m *MockConfigurationContract) GetHttpHost() (string, error) {
+func (m *MockConfigurationContract) GetHttpHost() string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHttpHost")
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
 // GetHttpHost indicates an expected call of GetHttpHost
@@ -75,6 +75,35 @@ func (m *MockConfigurationContract) GetRunningNodeName() (string, error) {
 func (mr *MockConfigurationContractMockRecorder) GetRunningNodeName() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRunningNodeName", reflect.TypeOf((*MockConfigurationContract)(nil).GetRunningNodeName))
+}
+
+// GetEdgeClusterType mocks base method
+func (m *MockConfigurationContract) GetEdgeClusterType() (configuration.ClusterType, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEdgeClusterType")
+	ret0, _ := ret[0].(configuration.ClusterType)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetEdgeClusterType indicates an expected call of GetEdgeClusterType
+func (mr *MockConfigurationContractMockRecorder) GetEdgeClusterType() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEdgeClusterType", reflect.TypeOf((*MockConfigurationContract)(nil).GetEdgeClusterType))
+}
+
+// ShouldUpdatePublciIPAndGeolocationDetails mocks base method
+func (m *MockConfigurationContract) ShouldUpdatePublciIPAndGeolocationDetails() bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShouldUpdatePublciIPAndGeolocationDetails")
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// ShouldUpdatePublciIPAndGeolocationDetails indicates an expected call of ShouldUpdatePublciIPAndGeolocationDetails
+func (mr *MockConfigurationContractMockRecorder) ShouldUpdatePublciIPAndGeolocationDetails() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShouldUpdatePublciIPAndGeolocationDetails", reflect.TypeOf((*MockConfigurationContract)(nil).ShouldUpdatePublciIPAndGeolocationDetails))
 }
 
 // GetGeolocationUpdaterCronSpec mocks base method

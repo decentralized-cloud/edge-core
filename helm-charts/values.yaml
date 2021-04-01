@@ -43,7 +43,9 @@ pod:
   http:
     host: ""
     port: 80
+  edgeClusterType: ""
   geolocation:
+    enabled: true
     cron:
       spec: "@every 5m"
   ipinfo:

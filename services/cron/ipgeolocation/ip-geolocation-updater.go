@@ -1,9 +1,10 @@
-// Package grpc implements functions to expose edge-core service endpoint using GRPC protocol.
-package geolocation
+// Package ipgeolocation implements functions to update public IP and geolocation details on the edge node
+package ipgeolocation
 
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -32,6 +33,7 @@ type cronService struct {
 	cron              *cron.Cron
 	clientset         *kubernetes.Clientset
 	runningNodeName   string
+	clusterType       configuration.ClusterType
 }
 
 type ipinfoResponse struct {
@@ -69,6 +71,15 @@ func NewCronService(
 
 	if configurationService == nil {
 		return nil, commonErrors.NewArgumentNilError("configurationService", "configurationService is required")
+	}
+
+	clusterType, err := configurationService.GetEdgeClusterType()
+	if err != nil {
+		return nil, err
+	}
+
+	if clusterType != configuration.K3S {
+		return nil, commonErrors.NewUnknownError(fmt.Sprintf("clusterType %v is not supported", clusterType))
 	}
 
 	cronSpec, err := configurationService.GetGeolocationUpdaterCronSpec()
@@ -109,6 +120,7 @@ func NewCronService(
 		cron:              cron.New(),
 		clientset:         clientset,
 		runningNodeName:   runningNodeName,
+		clusterType:       clusterType,
 	}, nil
 }
 

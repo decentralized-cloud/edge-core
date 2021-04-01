@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/decentralized-cloud/edge-core/services/configuration"
-	"github.com/decentralized-cloud/edge-core/services/cron/geolocation"
+	"github.com/decentralized-cloud/edge-core/services/cron/ipgeolocation"
 	"github.com/decentralized-cloud/edge-core/services/transport"
 	commonErrors "github.com/micro-business/go-core/system/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -43,19 +43,13 @@ func NewTransportService(
 // Start starts the Http transport service
 // Returns error if something goes wrong
 func (service *transportService) Start() error {
-	config := atreugo.Config{GracefulShutdown: true}
-	var err error
-
-	host, err := service.configurationService.GetHttpHost()
-	if err != nil {
-		return err
-	}
-
+	host := service.configurationService.GetHttpHost()
 	port, err := service.configurationService.GetHttpPort()
 	if err != nil {
 		return err
 	}
 
+	config := atreugo.Config{GracefulShutdown: true}
 	config.Addr = fmt.Sprintf("%s:%d", host, port)
 	server := atreugo.New(config)
 
@@ -74,7 +68,7 @@ func (service *transportService) Stop() error {
 }
 
 func (service *transportService) livenessCheckHandler(ctx *atreugo.RequestCtx) error {
-	if geolocation.Live {
+	if ipgeolocation.Live {
 		ctx.Response.SetStatusCode(http.StatusOK)
 	} else {
 		ctx.Response.SetStatusCode(http.StatusServiceUnavailable)
@@ -84,7 +78,7 @@ func (service *transportService) livenessCheckHandler(ctx *atreugo.RequestCtx) e
 }
 
 func (service *transportService) readinessCheckHandler(ctx *atreugo.RequestCtx) error {
-	if geolocation.Ready {
+	if ipgeolocation.Ready {
 		ctx.Response.SetStatusCode(http.StatusOK)
 	} else {
 		ctx.Response.SetStatusCode(http.StatusServiceUnavailable)

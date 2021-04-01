@@ -1,11 +1,21 @@
 // Package configuration implements configuration service required by the edge-core service
 package configuration
 
+// ClusterType is the edge cluster type
+type ClusterType int
+
+const (
+	// Unknown determines that configuration service could not determine edge cluster type
+	Unknown ClusterType = iota
+	// K3S is an edge cluster using K3S server and agent nodes
+	K3S
+)
+
 // ConfigurationContract declares the service that provides configuration required by different Tenat modules
 type ConfigurationContract interface {
 	// GetHttpHost returns HTTP host name
-	// Returns the HTTP host name or error if something goes wrong
-	GetHttpHost() (string, error)
+	// Returns the HTTP host name
+	GetHttpHost() string
 
 	// GetHttpPort returns HTTP port number
 	// Returns the HTTP port number or error if something goes wrong
@@ -14,6 +24,16 @@ type ConfigurationContract interface {
 	// GetRunningNodeName returns the name of the node that currently running the pod
 	// Returns the name of the node that currently running the pod or error if something goes wrong
 	GetRunningNodeName() (string, error)
+
+	// GetEdgeClusterType returns the type of edge cluster such as K3S
+	// Returns the type of edge cluster or error if something goes wrong
+	GetEdgeClusterType() (ClusterType, error)
+
+	// ShouldUpdatePublciIPAndGeolocationDetails determines whether the edge-core should periodically check
+	// for the node public IP address and geolocation details
+	// Returns true if the edge-core should periodically check for the node public IP address and
+	// geolocation details otherwise returns false
+	ShouldUpdatePublciIPAndGeolocationDetails() bool
 
 	// GetGeolocationUpdaterCronSpec returns Geolocation Updater updating interval
 	// Returns the Geolocation Updater updating interval or error if something goes wrong
