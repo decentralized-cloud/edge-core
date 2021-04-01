@@ -172,6 +172,8 @@ func (service *cronService) updateGeolocation() {
 	if err != nil {
 		return
 	}
+
+	service.logger.Info("Finished updating geolocation details.")
 }
 
 func getRestConfig(logger *zap.Logger) (*rest.Config, error) {
