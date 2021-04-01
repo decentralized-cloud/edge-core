@@ -286,6 +286,8 @@ func (service *cronService) getGeolocationDetails(ctx context.Context) (*ipinfoR
 }
 
 func (service *cronService) updateNode(ctx context.Context, ipinfoResponse *ipinfoResponse) error {
+	currentTime := base58.Encode([]byte(time.Now().Format(time.RFC3339Nano)), acceptedCharactersForLabels)
+
 	patch := struct {
 		Metadata struct {
 			Labels map[string]string `json:"labels"`
@@ -294,8 +296,10 @@ func (service *cronService) updateNode(ctx context.Context, ipinfoResponse *ipin
 
 	patch.Metadata.Labels = map[string]string{}
 	patch.Metadata.Labels["k3s.io/external-ip"] = ipinfoResponse.Ip
+	patch.Metadata.Labels["edgecloud9.public.lastUpdatedTime"] = currentTime
 	patch.Metadata.Labels["edgecloud9.public.ip"] = ipinfoResponse.Ip
 	patch.Metadata.Labels["edgecloud9.public.hostname"] = base58.Encode([]byte(ipinfoResponse.Hostname), acceptedCharactersForLabels)
+	patch.Metadata.Labels["edgecloud9.geolocation.lastUpdatedTime"] = currentTime
 	patch.Metadata.Labels["edgecloud9.geolocation.loc"] = base58.Encode([]byte(ipinfoResponse.Loc), acceptedCharactersForLabels)
 	patch.Metadata.Labels["edgecloud9.geolocation.city"] = base58.Encode([]byte(ipinfoResponse.City), acceptedCharactersForLabels)
 	patch.Metadata.Labels["edgecloud9.geolocation.region"] = base58.Encode([]byte(ipinfoResponse.Region), acceptedCharactersForLabels)
