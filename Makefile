@@ -22,7 +22,7 @@ export GOARCH ?= amd64
 GOFILES = $(shell find . -type f -name '*.go' -not -path "*/mock/*.go" -not -path "*.pb.go")
 
 .PHONY: all
-all: dep build install ## Get deps, and build, and install binary
+all: dep build-mocks build install ## Get deps, and build, and install binary
 
 .PHONY: clean
 clean: ## Clean the working area and the project
@@ -35,6 +35,10 @@ dep: ## Install dependencies
 	@go get github.com/mattn/goveralls
 	@go mod tidy
 	@go get -v -t ./...
+
+.PHONY: build-mocks
+build-mocks: ## Build mocks
+	@$(CURRENT_DIRECTORY)/scripts/build-mocks.sh
 
 .PHONY: build
 build: GOARGS += -tags "$(GOTAGS)" -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME)
