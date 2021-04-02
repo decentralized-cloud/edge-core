@@ -1,0 +1,9 @@
+FROM microbusiness/go-toolset:latest
+LABEL maintainer="morteza.alizadeh@gmail.com"
+
+ADD . /src
+WORKDIR /src
+RUN mockgen -source=services/transport/contract.go -destination=services/transport/mock/mock-contract.go
+RUN mockgen -source=services/cron/contract.go -destination=services/cron/mock/mock-contract.go
+RUN mockgen -source=services/configuration/contract.go -destination=services/configuration/mock/mock-contract.go
+
