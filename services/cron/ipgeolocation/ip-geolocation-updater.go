@@ -155,8 +155,7 @@ func (service *cronService) Stop() error {
 	return nil
 }
 
-// Stop stops the Geolocation Updater service
-// Returns error if something goes wrong
+// updateGeolocation update the public IP address and the geolocation of the node
 func (service *cronService) updateGeolocation() {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Minute)
 
@@ -295,7 +294,6 @@ func (service *cronService) updateNode(ctx context.Context, ipinfoResponse *ipin
 	}{}
 
 	patch.Metadata.Labels = map[string]string{}
-	patch.Metadata.Labels["k3s.io/external-ip"] = ipinfoResponse.Ip
 	patch.Metadata.Labels["edgecloud9.public.lastUpdatedTime"] = currentTime
 	patch.Metadata.Labels["edgecloud9.public.ip"] = base58.Encode([]byte(ipinfoResponse.Ip), acceptedCharactersForLabels)
 	patch.Metadata.Labels["edgecloud9.public.hostname"] = base58.Encode([]byte(ipinfoResponse.Hostname), acceptedCharactersForLabels)
